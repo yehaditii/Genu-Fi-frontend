@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 
 const Stats = () => {
@@ -48,7 +47,6 @@ const Stats = () => {
           currentValue += increment;
           if (currentValue >= finalValue) {
             currentValue = finalValue;
-            clearInterval(intervals.find(i => i === interval));
           }
           setCounts(prev => ({ ...prev, [key]: Math.floor(currentValue) }));
         }, stepTime);
