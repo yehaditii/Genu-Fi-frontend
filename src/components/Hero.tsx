@@ -27,7 +27,7 @@ const Hero = () => {
     const walletAddress = await connectWallet();
     if (!walletAddress) return;
 
-    const res = await fetch("http://localhost:5000/api/mint", {
+    const res = await fetch("https://genu-fi-backend.onrender.com", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
