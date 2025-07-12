@@ -3,8 +3,49 @@ import React from 'react';
 import { ArrowRight, Play } from 'lucide-react';
 import RotatingCube from './RotatingCube';
 import LaptopIllustration from './LaptopIllustration';
+import { useState } from 'react';
 
 const Hero = () => {
+  const [status, setStatus] = useState(""); // Add this line
+
+  const connectWallet = async () => {
+    if (window.ethereum) {
+      try {
+        const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+        const walletAddress = accounts[0];
+        return walletAddress;
+      } catch (err) {
+        console.error("User rejected the request");
+      }
+    } else {
+      alert("Please install MetaMask to use this feature.");
+    }
+  };
+  
+  const handleMint = async () => {
+    setStatus("Minting...");
+    const walletAddress = await connectWallet();
+    if (!walletAddress) return;
+
+    const res = await fetch("http://localhost:5000/api/mint", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        studentAddress: walletAddress, // Replace dynamically if needed
+        studentName: "Aditi Jha",
+        courseName: "Web3 Fundamentals"
+      }),
+    });
+
+    const data = await res.json();
+
+    if (data.success) {
+      setStatus(✅ Minted! View on Polygonscan:\nhttps://amoy.polygonscan.com/tx/${data.txHash});
+    } else {
+      setStatus(❌ Error: ${data.error});
+    }
+  };
+  
   return (
     <section id="home" className="min-h-screen flex items-center section-padding pt-32">
       <div className="container mx-auto">
@@ -35,10 +76,16 @@ const Hero = () => {
                 </p>
                 
                 <div className="flex flex-col sm:flex-row gap-4 pt-4">
-                  <button className="btn-primary flex items-center justify-center gap-3 group">
+                  <button onClick={handleMint} className="btn-primary flex items-center justify-center gap-3 group">
                     Get Certified
                     <ArrowRight className="group-hover:translate-x-1 transition-transform duration-300" size={20} />
                   </button>
+
+                  {status && (
+                    <p className="text-sm text-green-400 mt-4 whitespace-pre-line">
+                      {status}
+                    </p>
+                  )}
                   
                   <button className="btn-secondary flex items-center justify-center gap-3 group">
                     <Play size={20} />
